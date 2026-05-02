@@ -13,3 +13,18 @@ N_SAMPLE_COMPLETIONS = 8
 
 ON_KAGGLE = Path("/kaggle/working").exists()
 OUTPUT_ROOT = Path("/kaggle/working") if ON_KAGGLE else Path(__file__).resolve().parent.parent
+    seed=SEED,
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_features,
+    eval_dataset=eval_features,
+    processing_class=tokenizer,
+    data_collator=SFTDataCollator(tokenizer),
+)
+trainer.train()
+
+# ---- plot training loss ----
+plot_training_loss(trainer.state.log_history, OUTPUT_ROOT / "results" / "training_loss.png")
