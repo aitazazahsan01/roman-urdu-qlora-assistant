@@ -16,3 +16,21 @@ SECTION_MARKDOWN = {
         "the Trainer's mixed-precision mode. See the project README for full sizing rationale."
     ),
     "load & quantize base model": (
+    python scripts/build_kaggle_notebook.py
+"""
+
+import json
+import re
+from pathlib import Path
+
+SRC = Path(__file__).resolve().parent.parent / "src"
+OUT = Path(__file__).resolve().parent.parent / "kaggle" / "train_kernel.ipynb"
+
+
+def read(name: str) -> str:
+    return (SRC / name).read_text(encoding="utf-8")
+
+
+def strip_module_docstring(code: str) -> str:
+    return re.sub(r'^"""[\s\S]*?"""\n+', "", code, count=1)
+
