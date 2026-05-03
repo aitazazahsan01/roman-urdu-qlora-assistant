@@ -32,3 +32,20 @@ def parse_args():
     p.add_argument("--per-device-train-batch-size", type=int, default=4)
     p.add_argument("--gradient-accumulation-steps", type=int, default=4)
     p.add_argument("--learning-rate", type=float, default=2e-4)
+"""Fine-tune Qwen3-8B into a Roman Urdu instruction-following assistant via
+4-bit QLoRA.
+
+Real quantized QLoRA fine-tuning needs CUDA (bitsandbytes' 4-bit path is
+GPU-only) -- run this for real on a Kaggle T4 via kaggle/train_kernel.ipynb
+(this file's logic is inlined there) or any other CUDA machine.
+
+--smoke-test runs a tiny random-weight Qwen3-architecture model in full
+precision on CPU, against a real (but tiny) slice of the actual filtered
+Roman-Urdu data, to validate the data pipeline, chat-template formatting, loss
+masking, and LoRA adapter attachment before ever spending GPU quota. It does
+NOT and cannot validate the real 4-bit bitsandbytes quantization path itself --
+that can only be exercised on a real CUDA machine.
+
+Usage:
+    python src/train_qlora.py --smoke-test
+    python src/train_qlora.py --output-dir outputs/qwen3-8b-roman-urdu-qlora   # needs CUDA
