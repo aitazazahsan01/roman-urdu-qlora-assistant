@@ -15,3 +15,20 @@
         model=model,
         args=training_args,
         train_dataset=train_features,
+    prepare_for_training,
+)
+
+ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_DATA_DIR = ROOT / "data" / "processed" / "roman_urdu_qa"
+
+
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--model-name-or-path", default=BASE_MODEL_NAME)
+    p.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
+    p.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "qwen3-8b-roman-urdu-qlora")
+    p.add_argument("--max-seq-length", type=int, default=MAX_SEQ_LENGTH)
+    p.add_argument("--num-train-epochs", type=float, default=3.0)
+    p.add_argument("--per-device-train-batch-size", type=int, default=4)
+    p.add_argument("--gradient-accumulation-steps", type=int, default=4)
+    p.add_argument("--learning-rate", type=float, default=2e-4)
