@@ -49,3 +49,20 @@ that can only be exercised on a real CUDA machine.
 Usage:
     python src/train_qlora.py --smoke-test
     python src/train_qlora.py --output-dir outputs/qwen3-8b-roman-urdu-qlora   # needs CUDA
+            "(kaggle/train_kernel.ipynb) or another CUDA machine, or pass --smoke-test to validate "
+            "the pipeline on CPU instead."
+        )
+
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    if args.smoke_test:
+        config = AutoConfig.from_pretrained(args.model_name_or_path)
+        config.num_hidden_layers = 2
+        config.hidden_size = 32
+        config.intermediate_size = 64
+        config.num_attention_heads = 2
+        config.num_key_value_heads = 1
+        model = AutoModelForCausalLM.from_config(config)
+    else:
