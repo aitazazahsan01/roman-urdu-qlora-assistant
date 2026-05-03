@@ -46,3 +46,27 @@ numbers and `results/sample_completions.json` for all 8 saved transcripts).
   down_proj`) — not just attention. The QLoRA paper found this is needed to
   match full-finetune quality, and it's essentially free here: ~44M trainable
   params, about 0.5% of the 8B total. (Qwen3's `q_norm`/`k_norm` QK-norm
+  formatting, loss masking, and LoRA adapter attachment against a tiny
+  random-weight Qwen3-architecture model in full precision on CPU — it does
+  **not**, and cannot, validate the real 4-bit quantized path. That can only
+  be exercised on a real CUDA machine, which is exactly what
+  `kaggle/train_kernel.ipynb` is for.
+
+</details>
+
+## Model on the Hugging Face Hub
+
+The trained adapter is public and loadable directly (no local training or
+Kaggle run required):
+[`code-aitazaz/roman-urdu-qlora-qwen3-8b`](https://huggingface.co/code-aitazaz/roman-urdu-qlora-qwen3-8b) —
+its model card includes a full usage snippet and the same honest
+results/limitations writeup as below.
+
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM
+
+base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-8B", quantization_config=..., device_map="auto")
+model = PeftModel.from_pretrained(base, "code-aitazaz/roman-urdu-qlora-qwen3-8b")
+```
+
