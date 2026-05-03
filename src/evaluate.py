@@ -30,3 +30,11 @@ def parse_args():
     all_results["qlora_tuned"] = tuned_scores
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(all_results, f, indent=2)
+    python src/evaluate.py --adapter-dir outputs/qwen3-8b-roman-urdu-qlora   # needs CUDA
+    python src/evaluate.py --smoke-test
+"""
+
+import argparse
+import json
+from pathlib import Path
+
