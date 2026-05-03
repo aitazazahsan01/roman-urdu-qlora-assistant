@@ -15,3 +15,20 @@
     return pool.select(keep_idx)
 
 
+MAX_ROW_KEY_FIELDS = ("instruction", "input", "output")
+
+
+def _row_key(row: dict) -> tuple:
+    return tuple(row.get(f, "") for f in MAX_ROW_KEY_FIELDS)
+
+
+def load_raw_pool() -> Dataset:
+    return load_dataset(DATASET_NAME)["train"]
+
+
+def _dedupe(pool: Dataset) -> Dataset:
+    seen = set()
+    keep_idx = []
+    for i, row in enumerate(pool):
+        key = _row_key(row)
+        if key not in seen:
