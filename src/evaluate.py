@@ -22,3 +22,11 @@ def parse_args():
         config.num_hidden_layers = 2
         config.hidden_size = 32
         config.intermediate_size = 64
+    tuned_scores = rouge_l_summary(references, tuned_predictions)
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    all_results = json.loads(args.output.read_text(encoding="utf-8")) if args.output.exists() else {}
+    all_results["base_zeroshot"] = base_scores
+    all_results["qlora_tuned"] = tuned_scores
+    with open(args.output, "w", encoding="utf-8") as f:
+        json.dump(all_results, f, indent=2)
