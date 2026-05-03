@@ -14,3 +14,11 @@ def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--adapter-dir", type=Path, default=None, help="Required unless --smoke-test")
     p.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
+        tokenizer.pad_token = tokenizer.eos_token
+
+    if args.smoke_test:
+        print("Running in --smoke-test mode: tiny random-weight model + untrained LoRA adapter, CPU.")
+        config = AutoConfig.from_pretrained(BASE_MODEL_NAME)
+        config.num_hidden_layers = 2
+        config.hidden_size = 32
+        config.intermediate_size = 64
