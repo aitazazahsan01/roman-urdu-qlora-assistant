@@ -10,3 +10,6 @@ quota.
 
 
 def main():
+
+Usage:
+    python scripts/smoke_test.py
