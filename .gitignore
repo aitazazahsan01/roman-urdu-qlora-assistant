@@ -8,3 +8,5 @@ checkpoints/
 # Model checkpoints / training outputs
 kaggle_output/
 results/smoke-test-*
+.env
+

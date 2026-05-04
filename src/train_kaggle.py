@@ -28,3 +28,18 @@ trainer.train()
 
 # ---- plot training loss ----
 plot_training_loss(trainer.state.log_history, OUTPUT_ROOT / "results" / "training_loss.png")
+
+# ---- save adapter ----
+ADAPTER_DIR.mkdir(parents=True, exist_ok=True)
+model.save_pretrained(str(ADAPTER_DIR))
+tokenizer.save_pretrained(str(ADAPTER_DIR))
+print(f"Saved LoRA adapter to {ADAPTER_DIR}")
+
+# ---- evaluate: base vs tuned + ROUGE-L ----
+# Generate both arms from the SAME loaded model object via peft's
+# disable_adapter() context manager, rather than loading the 8B base a second
+# time -- a second full copy would not fit alongside the first in a T4's 16GB.
+held_out = eval_ds.select(range(min(len(eval_ds), 40)))  # keep eval generation time reasonable
+references = [row["output"] for row in held_out]
+
+base_predictions, tuned_predictions = [], []
