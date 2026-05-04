@@ -4,3 +4,5 @@ Thumbs.db
 *.safetensors
 outputs/
 checkpoints/
+
+# Model checkpoints / training outputs
