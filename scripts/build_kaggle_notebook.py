@@ -34,3 +34,21 @@ def read(name: str) -> str:
 def strip_module_docstring(code: str) -> str:
     return re.sub(r'^"""[\s\S]*?"""\n+', "", code, count=1)
 
+def code_cell(source: str) -> dict:
+    return {
+        "cell_type": "code",
+        "id": _next_id(),
+        "metadata": {},
+        "execution_count": None,
+        "outputs": [],
+        "source": source.splitlines(keepends=True),
+    }
+
+
+def md_cell(source: str) -> dict:
+    return {"cell_type": "markdown", "id": _next_id(), "metadata": {}, "source": source.splitlines(keepends=True)}
+
+
+def main():
+    qlora_utils_code = strip_module_docstring(read("qlora_utils.py"))
+    metrics_utils_code = strip_module_docstring(read("metrics_utils.py"))
