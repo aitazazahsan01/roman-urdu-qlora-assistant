@@ -32,3 +32,19 @@ def format_and_mask(instruction: str, input_text: str, output: str, tokenizer, m
     full_ids = tokenizer.apply_chat_template(
         messages + [{"role": "assistant", "content": output}], tokenize=True, add_generation_prompt=False
     )["input_ids"]
+"""Shared QLoRA plumbing: quantization config, LoRA config, chat-template
+formatting with prompt-token loss-masking, and the SFT data collator.
+
+Used by both train_qlora.py (local) and train_kaggle.py (Kaggle GPU); inlined
+into kaggle/train_kernel.ipynb by scripts/build_kaggle_notebook.py so the two
+never drift.
+
+Qwen3's chat template always wraps assistant content in a <think>...</think>
+block. With enable_thinking=False the block is forced empty at generation time
+-- verified (by tokenizing real examples both ways and diffing token ids) that
+building a full [user, assistant] conversation with add_generation_prompt=False
+produces that exact same empty-think prefix, so the prompt built here with
+add_generation_prompt=True is byte-identical to the prefix of the full labeled
+sequence. That prefix-identity is what format_and_mask relies on to mask
+exactly the prompt tokens out of the loss; the assertion below fails loudly
+(rather than silently mis-masking) if a future transformers/Qwen3 chat-template
