@@ -66,3 +66,20 @@ Usage:
         config.num_key_value_heads = 1
         model = AutoModelForCausalLM.from_config(config)
     else:
+"""
+
+import argparse
+import json
+from pathlib import Path
+
+import torch
+from datasets import Dataset
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments, set_seed
+
+from qlora_utils import (
+    BASE_MODEL_NAME,
+    MAX_SEQ_LENGTH,
+    SFTDataCollator,
+    build_bnb_config,
+    format_and_mask,
+    plot_training_loss,
