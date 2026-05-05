@@ -83,3 +83,20 @@ from qlora_utils import (
     build_bnb_config,
     format_and_mask,
     plot_training_loss,
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_name_or_path, quantization_config=build_bnb_config(), device_map="auto"
+        )
+
+    model = prepare_for_training(model, use_4bit=use_4bit)
+    model.print_trainable_parameters()
+
+    train_ds = load_split(args.data_dir, "train")
+    eval_ds = load_split(args.data_dir, "validation")
+    if args.smoke_test:
+        train_ds = train_ds.select(range(min(16, len(train_ds))))
+        eval_ds = eval_ds.select(range(min(8, len(eval_ds))))
+
+    def tokenize(example):
+        return format_and_mask(example["instruction"], example["input"], example["output"], tokenizer, args.max_seq_length)
+
+    train_features = train_ds.map(tokenize, remove_columns=train_ds.column_names)
