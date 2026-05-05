@@ -94,3 +94,27 @@ Then either:
 ```bash
 python src/evaluate.py --adapter-dir code-aitazaz/roman-urdu-qlora-qwen3-8b
 # or a local path: --adapter-dir kaggle_output/outputs/qwen3-8b-roman-urdu-qlora
+1. **File membership** — does this row's `(instruction, input, output)` match
+   a row in the raw `roman_urdu_QA_full_alpaca.jsonl` source file?
+2. **A lightweight Roman-Urdu stopword-hit-rate heuristic**, as a cross-check.
+
+Cross-validating the two found only 3 disagreements out of 999 deduped rows —
+all the same failure mode: English-language *questions about* Urdu (e.g.
+"Give some examples of Singular and Plural in Urdu Language") that happen to
+live inside the "pure Roman-Urdu" source file. Those 3 are dropped.
+
+**Net usable pool: ~485 Roman-Urdu rows** (raw 1,489 → 999 deduped → 488
+file-matched → 485 after the heuristic cross-check). `data_prep.py` prints
+this whole funnel when you run it. Also worth noting: the 489-row source file
+itself contains exactly one internal duplicate.
+
+A larger Urdu-*script* (not Roman) Alpaca-52K translation exists —
+[`saillab/alpaca-urdu-cleaned`](https://huggingface.co/datasets/saillab/alpaca-urdu-cleaned),
+CC-BY-NC academic-only — but transliterating it to Roman Urdu at scale is real
+engineering effort with real quality risk, and is **not implemented here**;
+it's a documented future-augmentation idea, not a v1 feature.
+
+</details>
+
+## Approach
+
