@@ -70,3 +70,27 @@ base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-8B", quantization_config
 model = PeftModel.from_pretrained(base, "code-aitazaz/roman-urdu-qlora-qwen3-8b")
 ```
 
+python scripts/build_kaggle_notebook.py   # regenerate kaggle/train_kernel.ipynb if you changed src/
+```
+
+Then either:
+- Open `kaggle/train_kernel.ipynb` directly on kaggle.com (upload it, or
+  create a new notebook and paste it in), set **Settings → Accelerator → GPU
+  T4 x1** and **Internet → On**, and **Run All** — read the markdown between
+  cells as it goes; the notebook is written to be watched, not just executed
+  blind. The last cell prints several instruction / reference / base-model /
+  tuned-model transcripts side by side so you can see the adapter's effect
+  immediately.
+- Or push it via the Kaggle CLI, same mechanism the sibling projects use
+  (entirely optional, just a faster way to get the notebook onto Kaggle):
+  ```bash
+  cd kaggle
+  kaggle kernels push --accelerator NvidiaTeslaT4
+  kaggle kernels output <username>/roman-urdu-qlora-assistant-training -p ../kaggle_output
+  ```
+
+**4. Evaluate a trained adapter (needs CUDA):**
+
+```bash
+python src/evaluate.py --adapter-dir code-aitazaz/roman-urdu-qlora-qwen3-8b
+# or a local path: --adapter-dir kaggle_output/outputs/qwen3-8b-roman-urdu-qlora
