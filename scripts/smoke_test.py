@@ -13,3 +13,6 @@ def main():
 
 Usage:
     python scripts/smoke_test.py
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "src"
+SMOKE_OUTPUT_DIR = ROOT / "outputs" / "smoke-test-qlora"
