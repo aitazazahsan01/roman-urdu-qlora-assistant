@@ -32,3 +32,20 @@ def _dedupe(pool: Dataset) -> Dataset:
     for i, row in enumerate(pool):
         key = _row_key(row)
         if key not in seen:
+        print(
+            f"  chat-template token lengths: min={lengths[0]} p50={lengths[n // 2]} "
+            f"p90={lengths[int(n * 0.9)]} p99={lengths[int(n * 0.99)]} max={lengths[-1]}"
+        )
+        if lengths[-1] > MAX_SEQ_LENGTH:
+            print(f"  warning: max length {lengths[-1]} exceeds MAX_SEQ_LENGTH={MAX_SEQ_LENGTH} -- those rows will be truncated")
+    except Exception as exc:
+        print(f"  warning: couldn't load {BASE_MODEL_NAME} tokenizer to measure lengths ({exc}); skipping this check")
+
+    print("Sanity check passed.")
+
+
+def build_splits(val_fraction: float, seed: int) -> tuple:
+    print(f"Loading {DATASET_NAME} from the Hugging Face Hub...")
+    raw = load_raw_pool()
+    print(f"  raw train split: {len(raw)} rows")
+
