@@ -118,3 +118,27 @@ it's a documented future-augmentation idea, not a v1 feature.
 
 ## Approach
 
+<div align="center">
+
+# Roman Urdu QLoRA Assistant
+
+*Teaching an 8B open-weight LLM to default to Roman Urdu — 4-bit QLoRA fine-tuning on a single free Kaggle GPU, with the real wins **and** the real failure modes reported.*
+
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![Base model](https://img.shields.io/badge/%F0%9F%A4%97%20Base-Qwen3--8B-yellow)](https://huggingface.co/Qwen/Qwen3-8B)
+[![Adapter](https://img.shields.io/badge/%F0%9F%A4%97%20Adapter-roman--urdu--qlora--qwen3--8b-orange)](https://huggingface.co/code-aitazaz/roman-urdu-qlora-qwen3-8b)
+[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-roman--urdu--alpaca--qa--mix-yellow)](https://huggingface.co/datasets/Redgerd/roman-urdu-alpaca-qa-mix)
+
+</div>
+
+<br>
+
+<table>
+<tr><td>
+
+**Base model** | [`Qwen/Qwen3-8B`](https://huggingface.co/Qwen/Qwen3-8B) (Apache-2.0)
+:--|:--
+**Method** | 4-bit QLoRA — rank 16, all 7 linear projections
+**Training data** | 485 real Roman Urdu instruction pairs — after finding & fixing a genuine duplication bug in the source dataset
+**Compute** | 1× Kaggle T4 (free tier), ~1 hour end to end
