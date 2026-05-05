@@ -52,3 +52,21 @@ def md_cell(source: str) -> dict:
 def main():
     qlora_utils_code = strip_module_docstring(read("qlora_utils.py"))
     metrics_utils_code = strip_module_docstring(read("metrics_utils.py"))
+        code_cell(metrics_utils_code),
+        code_cell(data_prep_code),
+    ]
+
+    for name, block in split_by_section_markers(train_kaggle_code):
+        if name in SECTION_MARKDOWN:
+            cells.append(md_cell(SECTION_MARKDOWN[name]))
+        cells.append(code_cell(block))
+
+    cells.append(
+        md_cell(
+            "Outputs are written under `/kaggle/working/outputs` (the LoRA adapter) and "
+            "`/kaggle/working/results` (`metrics.json`, `sample_completions.json`). Pull them back "
+            "locally with:\n\n"
+            "```\nkaggle kernels output <username>/<slug> -p ./kaggle_output\n```\n\n"
+            "Or push the adapter directly to the Hugging Face Hub from within this kernel with "
+            "`model.push_to_hub(...)` / `tokenizer.push_to_hub(...)` if you'd rather skip the pull step."
+        )
