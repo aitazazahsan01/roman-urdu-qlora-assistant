@@ -57,3 +57,20 @@ def build_splits(val_fraction: float, seed: int) -> tuple:
 
 if __name__ == "__main__":
     main()
+    print(f"  {RU_SOURCE_FILE}: {n_lines} lines, {len(keys)} unique keys ({n_lines - len(keys)} internal duplicate(s))")
+    return keys
+
+
+def _looks_like_roman_urdu(instruction: str, output: str) -> bool:
+    text = f"{instruction} {output}".lower()
+    words = text.split()
+    if not words:
+        return False
+    hits = sum(1 for w in words if w.strip(".,?!\"'") in RU_STOPWORDS)
+    return (hits / len(words)) > 0.03
+
+
+def filter_roman_urdu(pool: Dataset) -> Dataset:
+    membership_keys = _roman_urdu_membership_keys()
+
+    keep_idx = []
