@@ -142,3 +142,27 @@ it's a documented future-augmentation idea, not a v1 feature.
 **Method** | 4-bit QLoRA — rank 16, all 7 linear projections
 **Training data** | 485 real Roman Urdu instruction pairs — after finding & fixing a genuine duplication bug in the source dataset
 **Compute** | 1× Kaggle T4 (free tier), ~1 hour end to end
+transcript in [Results](#results) below is from that real run, not a
+placeholder.
+
+## Data quality
+
+<details>
+<summary><b>A real duplication bug was found and fixed in the upstream dataset — click for the full writeup</b></summary>
+
+<br>
+
+`Redgerd/roman-urdu-alpaca-qa-mix`'s Hub `train` split (1,489 rows) is
+actually two raw JSONL files concatenated: `combined_roman_urdu_english.jsonl`
+(1,000 rows: ~500 Roman Urdu + ~500 English Alpaca, shuffled together) and
+`roman_urdu_QA_full_alpaca.jsonl` (489 rows: the pure-Roman-Urdu source the
+combined file's Roman-Urdu half was drawn from) — confirmed by downloading
+both raw files and diffing them against the Hub's auto-converted parquet
+byte-for-byte.
+
+**488 of those 489 "full" rows are exact-content duplicates of rows already
+inside `combined`.** The naive 1,489-row split silently double-counts ~488
+examples. There's also no language-tag column (parquet columns are only
+`instruction`/`input`/`output`/`text`), so `src/data_prep.py` isolates the
+real Roman-Urdu rows using two independent signals that have to agree:
+
