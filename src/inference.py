@@ -9,3 +9,6 @@
     def generate(self, instruction: str, input_text: str = "") -> str:
         return generate_completion(self.model, self.tokenizer, instruction, input_text, self.max_new_tokens)
 
+
+if __name__ == "__main__":
+    main()

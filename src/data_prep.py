@@ -49,3 +49,11 @@ def build_splits(val_fraction: float, seed: int) -> tuple:
     raw = load_raw_pool()
     print(f"  raw train split: {len(raw)} rows")
 
+    with open(args.out_dir / "filter_report.json", "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2)
+
+    print(f"Saved processed splits + filter_report.json to {args.out_dir}")
+
+
+if __name__ == "__main__":
+    main()
