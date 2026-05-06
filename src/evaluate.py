@@ -40,3 +40,11 @@ from pathlib import Path
 
 if __name__ == "__main__":
     main()
+    return args
+
+
+def main():
+    args = parse_args()
+
+    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME)
+    if tokenizer.pad_token is None:
