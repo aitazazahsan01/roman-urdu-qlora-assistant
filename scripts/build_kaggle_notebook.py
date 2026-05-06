@@ -70,3 +70,21 @@ def main():
             "Or push the adapter directly to the Hugging Face Hub from within this kernel with "
             "`model.push_to_hub(...)` / `tokenizer.push_to_hub(...)` if you'd rather skip the pull step."
         )
+
+def strip_local_imports(code: str) -> str:
+    """Strips both single-line (`from X import a, b`) and multi-line
+    parenthesized (`from X import (\n    a,\n    b,\n)`) local imports --
+    train_kaggle.py's `from qlora_utils import (...)` uses the latter."""
+    code = re.sub(r"^from (qlora_utils|metrics_utils|data_prep) import \([\s\S]*?\)\n", "", code, flags=re.MULTILINE)
+    code = re.sub(r"^from (qlora_utils|metrics_utils|data_prep) import .*\n", "", code, flags=re.MULTILINE)
+    return code
+
+
+def strip_main_block(code: str) -> str:
+    """data_prep.py puts def main() and the __main__ guard last; the notebook
+    doesn't need either (build_splits() is called directly in train_kaggle.py)."""
+    return re.sub(r"\ndef main\(\)[\s\S]*\Z", "\n", code)
+
+
+def strip_default_out_dir(code: str) -> str:
+    """DEFAULT_OUT_DIR relies on __file__, which isn't defined when a cell
