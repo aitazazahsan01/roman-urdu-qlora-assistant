@@ -64,3 +64,19 @@ exactly the prompt tokens out of the loss; the assertion below fails loudly
         for i, lab in enumerate(labels):
             padded_labels[i, : len(lab)] = torch.tensor(lab, dtype=torch.long)
 
+revision breaks this property.
+"""
+
+from pathlib import Path
+
+import torch
+from transformers import BitsAndBytesConfig
+
+
+def _is_notebook() -> bool:
+    try:
+        from IPython import get_ipython
+
+        shell = get_ipython()
+        return shell is not None and shell.__class__.__name__ == "ZMQInteractiveShell"
+    except ImportError:

@@ -72,3 +72,11 @@ def main():
         args.output = args.output.parent / "smoke-test-metrics.json"
         args.samples_output = args.samples_output.parent / "smoke-test-sample_completions.json"
     else:
+
+    print(f"Base (zero-shot)  ROUGE-L F: {base_scores['rougeL_fmeasure_mean']:.4f}  (n={base_scores['n']})")
+    print(f"QLoRA-tuned        ROUGE-L F: {tuned_scores['rougeL_fmeasure_mean']:.4f}  (n={tuned_scores['n']})")
+    print(f"Saved metrics to {args.output}")
+
+    chart_path = args.output.parent / ("smoke-test-rouge_comparison.png" if args.smoke_test else "rouge_comparison.png")
+    plot_rouge_comparison(base_scores, tuned_scores, chart_path)
+
