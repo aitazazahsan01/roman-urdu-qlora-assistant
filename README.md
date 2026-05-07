@@ -166,3 +166,27 @@ examples. There's also no language-tag column (parquet columns are only
 `instruction`/`input`/`output`/`text`), so `src/data_prep.py` isolates the
 real Roman-Urdu rows using two independent signals that have to agree:
 
+  inference.py                         # single-prompt generation wrapper used by the demo app
+kaggle/
+  kernel-metadata.json                   # Kaggle kernel config (GPU T4, internet on)
+  train_kernel.ipynb                       # auto-generated, pedagogically cell-split -- see scripts/build_kaggle_notebook.py
+app/
+  app.py                                     # Gradio demo (needs CUDA to actually run)
+scripts/
+  smoke_test.py                                 # local CPU pipeline sanity check
+  build_kaggle_notebook.py                         # regenerates kaggle/train_kernel.ipynb from src/
+results/
+  metrics.json, sample_completions.json              # real numbers from an actual Kaggle T4 run
+  training_loss.png, rouge_comparison.png              # charts from that same run
+```
+
+## Setup
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+```
+
+`bitsandbytes` needs CUDA to do anything useful — it'll install fine on a
+CPU-only machine, but the 4-bit quantized path simply won't run there. That's
