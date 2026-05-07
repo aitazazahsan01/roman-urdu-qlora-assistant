@@ -74,3 +74,20 @@ def filter_roman_urdu(pool: Dataset) -> Dataset:
     membership_keys = _roman_urdu_membership_keys()
 
     keep_idx = []
+    parser.add_argument("--val-fraction", type=float, default=0.1)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    args = parser.parse_args()
+
+    train, val = build_splits(args.val_fraction, args.seed)
+    print(f"train={len(train)}  validation={len(val)}")
+
+    args.out_dir.mkdir(parents=True, exist_ok=True)
+    train.save_to_disk(str(args.out_dir / "train"))
+    val.save_to_disk(str(args.out_dir / "validation"))
+
+    report = {
+        "raw_rows": len(load_raw_pool()),
+        "final_train": len(train),
+        "final_validation": len(val),
+    }
