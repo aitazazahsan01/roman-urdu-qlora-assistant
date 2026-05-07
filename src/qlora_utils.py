@@ -48,3 +48,19 @@ add_generation_prompt=True is byte-identical to the prefix of the full labeled
 sequence. That prefix-identity is what format_and_mask relies on to mask
 exactly the prompt tokens out of the loss; the assertion below fails loudly
 (rather than silently mis-masking) if a future transformers/Qwen3 chat-template
+    both a causal-LM label sequence and a prompt-masked region at once)."""
+
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+
+    def __call__(self, features: list) -> dict:
+        labels = [f["labels"] for f in features]
+        no_labels = [{"input_ids": f["input_ids"]} for f in features]
+
+        batch = self.tokenizer.pad(no_labels, return_tensors="pt")
+        max_len = batch["input_ids"].shape[1]
+
+        padded_labels = torch.full((len(labels), max_len), -100, dtype=torch.long)
+        for i, lab in enumerate(labels):
+            padded_labels[i, : len(lab)] = torch.tensor(lab, dtype=torch.long)
+
