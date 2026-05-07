@@ -26,3 +26,15 @@ import matplotlib  # noqa: E402
 # See qlora_utils._is_notebook's comment: force the non-interactive Agg
 # backend outside a notebook kernel so plt.show() can never block on a GUI
 # window that nothing will close in a headless script run.
+if not _is_notebook():
+    matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+
+
+def rouge_l_summary(references: list, predictions: list) -> dict:
+    """use_stemmer=False is deliberate: the default English Porter stemmer
+    would silently mangle Roman-Urdu tokens if left on -- the same
+    "don't apply English-tuned NLP defaults to Roman Urdu" discipline used
+    elsewhere in this project (the tokenizer/chat-template choices)."""
+    scorer = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=False)
+    precisions, recalls, fmeasures = [], [], []

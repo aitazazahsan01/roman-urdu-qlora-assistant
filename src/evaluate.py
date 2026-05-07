@@ -64,3 +64,11 @@ def main():
     print(f"Saved {len(samples)} sample completions to {args.samples_output}")
 
 
+                "instruction": ["Pakistan ka dar-ul-hukumat kya hai?", "Ek chota nazam likhein."],
+                "input": ["", ""],
+                "output": ["Islamabad Pakistan ka dar-ul-hukumat hai.", "Chaand raat mein chamakta hai."],
+            }
+        )
+        args.output = args.output.parent / "smoke-test-metrics.json"
+        args.samples_output = args.samples_output.parent / "smoke-test-sample_completions.json"
+    else:
