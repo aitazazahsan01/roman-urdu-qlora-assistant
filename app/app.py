@@ -20,3 +20,14 @@ def build_app(adapter_dir: str) -> gr.Blocks:
                 instruction_box = gr.Textbox(label="Instruction", lines=3, placeholder="Apna sawaal yahan likhein...")
                 input_box = gr.Textbox(label="Extra context (optional)", lines=2)
                 submit_btn = gr.Button("Generate", variant="primary")
+        assistant = None
+        load_error = str(exc)
+
+    def respond(instruction: str, input_text: str):
+        if load_error:
+            return f"Model failed to load: {load_error}"
+        if not instruction.strip():
+            return "Type an instruction first."
+        return assistant.generate(instruction, input_text)
+
+    with gr.Blocks(title="Roman Urdu QLoRA Assistant") as demo:
