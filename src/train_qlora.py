@@ -100,3 +100,20 @@ from qlora_utils import (
         return format_and_mask(example["instruction"], example["input"], example["output"], tokenizer, args.max_seq_length)
 
     train_features = train_ds.map(tokenize, remove_columns=train_ds.column_names)
+        eval_dataset=eval_features,
+        processing_class=tokenizer,
+        data_collator=SFTDataCollator(tokenizer),
+    )
+    trainer.train()
+
+    loss_plot_name = "smoke-test-training_loss.png" if args.smoke_test else "training_loss.png"
+    plot_training_loss(trainer.state.log_history, ROOT / "results" / loss_plot_name)
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(str(args.output_dir))  # adapter only (peft model)
+    tokenizer.save_pretrained(str(args.output_dir))
+
+    run_config = {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()}
+    with open(args.output_dir / "run_config.json", "w", encoding="utf-8") as f:
+        json.dump(run_config, f, indent=2)
+
