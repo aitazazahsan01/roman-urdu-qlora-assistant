@@ -48,3 +48,19 @@ def main():
 
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME)
     if tokenizer.pad_token is None:
+    p.add_argument("--n-eval", type=int, default=40, help="How many held-out rows to generate on")
+    p.add_argument("--n-samples", type=int, default=8, help="How many to also save as full transcripts")
+    p.add_argument("--output", type=Path, default=ROOT / "results" / "metrics.json")
+    p.add_argument("--samples-output", type=Path, default=ROOT / "results" / "sample_completions.json")
+    p.add_argument("--smoke-test", action="store_true")
+    args = p.parse_args()
+    if not args.smoke_test and args.adapter_dir is None:
+        p.error("--adapter-dir is required unless --smoke-test")
+        }
+        for i in range(n_samples)
+    ]
+    with open(args.samples_output, "w", encoding="utf-8") as f:
+        json.dump(samples, f, indent=2)
+    print(f"Saved {len(samples)} sample completions to {args.samples_output}")
+
+
