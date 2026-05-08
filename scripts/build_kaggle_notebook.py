@@ -106,3 +106,21 @@ def _next_id() -> str:
     return f"cell-{_cell_counter}"
 
 
+    runs inside a notebook kernel (unlike train_kaggle.py's OUTPUT_ROOT, this
+    one isn't behind a ON_KAGGLE ternary, so it crashes unconditionally). It's
+    only ever used as an argparse default inside main(), already stripped
+    above -- safe, and necessary, to drop for the notebook."""
+    return re.sub(r"^DEFAULT_OUT_DIR = .*\n", "", code, flags=re.MULTILINE)
+
+
+def split_by_section_markers(code: str) -> list:
+    """Splits train_kaggle.py on lines matching `# ---- name ----`, returning
+    [(section_name, code_block), ...]. Code before the first marker (just the
+    import statements) becomes its own leading 'imports' section."""
+    pattern = re.compile(r"^# ---- (.+) ----$", re.MULTILINE)
+    matches = list(pattern.finditer(code))
+    sections = []
+    if matches and matches[0].start() > 0:
+        head = code[: matches[0].start()].strip()
+        if head:
+            sections.append(("imports", head))
