@@ -96,3 +96,19 @@ def _is_notebook() -> bool:
 
 def build_lora_config():
     from peft import LoraConfig
+        plt.show()
+    plt.close()
+    print(f"Saved loss curve to {output_path}")
+
+
+def prepare_for_training(model, use_4bit: bool):
+    """Attach LoRA adapters. When use_4bit, first runs peft's
+    prepare_model_for_kbit_training -- the standard, necessary glue step when
+    combining 4-bit loading + gradient checkpointing (enables requires_grad on
+    the input embeddings and casts norms to fp32); skipping it is a well-known
+    QLoRA gotcha (`element 0 of tensors does not require grad`). Not needed for
+    the full-precision smoke-test model, which is tiny enough to train without
+    gradient checkpointing at all."""
+    from peft import get_peft_model, prepare_model_for_kbit_training
+
+    if use_4bit:
