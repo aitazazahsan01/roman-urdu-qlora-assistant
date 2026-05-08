@@ -10,3 +10,5 @@ kaggle_output/
 results/smoke-test-*
 .env
 
+*.pyc
+.venv/
