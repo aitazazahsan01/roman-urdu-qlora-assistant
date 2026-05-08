@@ -117,3 +117,20 @@ from qlora_utils import (
     with open(args.output_dir / "run_config.json", "w", encoding="utf-8") as f:
         json.dump(run_config, f, indent=2)
 
+    p.add_argument("--warmup-ratio", type=float, default=0.05)
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument(
+        "--smoke-test",
+        action="store_true",
+        help="Tiny random-weight model, CPU-friendly, real (but tiny) data slice, to validate the pipeline "
+        "before spending GPU quota. Cannot exercise the real 4-bit quantization path.",
+    )
+    return p.parse_args()
+
+
+def load_split(data_dir: Path, split: str) -> Dataset:
+    return Dataset.load_from_disk(str(data_dir / split))
+
+
+def main():
+    args = parse_args()

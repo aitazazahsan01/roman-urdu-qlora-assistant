@@ -80,3 +80,19 @@ def _is_notebook() -> bool:
         shell = get_ipython()
         return shell is not None and shell.__class__.__name__ == "ZMQInteractiveShell"
     except ImportError:
+    """4-bit NF4 quantization config. compute_dtype is float16, NOT bfloat16:
+    a Kaggle T4 is a Turing GPU (compute capability 7.5) -- bf16 tensor-core
+    support only starts at Ampere (cc 8.0). Most QLoRA recipes default to bf16
+    because they assume A100-class hardware; using it on a T4 either silently
+    falls back to slow emulated math or produces dtype mismatches against the
+    Trainer's fp16 mixed-precision mode. Must pair with TrainingArguments(fp16=True)."""
+    return BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.float16,
+    )
+
+
+def build_lora_config():
+    from peft import LoraConfig
