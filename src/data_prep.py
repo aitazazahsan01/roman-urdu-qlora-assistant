@@ -91,3 +91,20 @@ def filter_roman_urdu(pool: Dataset) -> Dataset:
         "final_train": len(train),
         "final_validation": len(val),
     }
+            seen.add(key)
+            keep_idx.append(i)
+    return pool.select(keep_idx)
+
+
+def _roman_urdu_membership_keys() -> set:
+    path = hf_hub_download(repo_id=DATASET_NAME, filename=RU_SOURCE_FILE, repo_type="dataset")
+    keys = set()
+    n_lines = 0
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            n_lines += 1
+            row = json.loads(line)
+            keys.add(_row_key(row))
