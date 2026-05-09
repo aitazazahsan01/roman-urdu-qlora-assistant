@@ -108,3 +108,20 @@ def _roman_urdu_membership_keys() -> set:
             n_lines += 1
             row = json.loads(line)
             keys.add(_row_key(row))
+"""Build a clean Roman-Urdu-only instruction-tuning set from
+Redgerd/roman-urdu-alpaca-qa-mix.
+
+The Hub's `train` split (1,489 rows) is actually two raw JSONL files
+concatenated: `combined_roman_urdu_english.jsonl` (1000 rows, ~500 Roman Urdu +
+~500 English Alpaca, shuffled) followed by `roman_urdu_QA_full_alpaca.jsonl`
+(489 rows, the pure-Roman-Urdu source the combined file's RU half was drawn
+from) -- verified by downloading both raw files and diffing them against the
+Hub's auto-converted parquet byte-for-byte. 488 of those 489 "full" rows are
+exact-content duplicates of rows already inside `combined`, so the naive
+1489-row split silently double-counts ~488 examples. There is also no
+language-tag column (parquet columns are only instruction/input/output/text),
+so isolating the Roman-Urdu-only rows needs two independent signals:
+
+  1. File-membership: does this row's (instruction, input, output) match a row
+     in the raw roman_urdu_QA_full_alpaca.jsonl source file?
+  2. A lightweight Roman-Urdu stopword-hit-rate heuristic, as a cross-check.
