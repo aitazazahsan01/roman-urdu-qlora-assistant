@@ -190,3 +190,16 @@ pip install -r requirements.txt
 
 `bitsandbytes` needs CUDA to do anything useful — it'll install fine on a
 CPU-only machine, but the 4-bit quantized path simply won't run there. That's
+retraining for this — it's a pure decoding-time parameter, so the next
+`evaluate.py`/`inference.py`/demo run already benefits without spending more
+Kaggle GPU quota. Re-running `evaluate.py` against the same adapter to
+confirm the repetition is actually gone is the natural next step, left for
+whenever more Kaggle time is worth spending.
+
+## License
+
+Code: MIT. Model: `Qwen/Qwen3-8B` is Apache-2.0. Dataset:
+`Redgerd/roman-urdu-alpaca-qa-mix` is Apache-2.0.
+
+<div align="center">
+</div>

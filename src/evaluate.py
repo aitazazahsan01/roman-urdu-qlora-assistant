@@ -80,3 +80,11 @@ def main():
     chart_path = args.output.parent / ("smoke-test-rouge_comparison.png" if args.smoke_test else "rouge_comparison.png")
     plot_rouge_comparison(base_scores, tuned_scores, chart_path)
 
+
+    base_predictions, tuned_predictions = [], []
+    for row in held_out:
+        with model.disable_adapter():
+            base_predictions.append(generate_completion(model, tokenizer, row["instruction"], row["input"]))
+        tuned_predictions.append(generate_completion(model, tokenizer, row["instruction"], row["input"]))
+
+    base_scores = rouge_l_summary(references, base_predictions)
