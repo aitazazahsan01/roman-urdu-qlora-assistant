@@ -12,3 +12,5 @@ results/smoke-test-*
 
 *.pyc
 .venv/
+# Jupyter checkpoints
+.ipynb_checkpoints/
