@@ -19,3 +19,6 @@ SMOKE_OUTPUT_DIR = ROOT / "outputs" / "smoke-test-qlora"
         "yourself on a Kaggle T4."
     )
 
+    run("train_qlora.py", "--smoke-test")
+    run("evaluate.py", "--smoke-test")
+    print(

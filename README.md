@@ -203,3 +203,27 @@ Code: MIT. Model: `Qwen/Qwen3-8B` is Apache-2.0. Dataset:
 
 <div align="center">
 </div>
+expected; see "Running it" below.
+
+## Running it
+
+**1. Prepare data:**
+
+```bash
+python src/data_prep.py
+```
+
+Prints the full filtering funnel described in [Data quality](#data-quality) above.
+
+**2. Sanity-check the pipeline locally (CPU, no GPU needed):**
+
+```bash
+python scripts/smoke_test.py
+```
+
+Validates everything except the real 4-bit quantization path — see the
+"local CPU smoke test's honest scope" note in [Approach](#approach).
+
+**3. Fine-tune on Kaggle's free T4 GPU:**
+
+```bash
