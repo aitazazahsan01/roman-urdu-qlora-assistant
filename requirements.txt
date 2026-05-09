@@ -6,3 +6,5 @@ bitsandbytes>=0.43
 
 matplotlib
 
+# Evaluation
+rouge-score
