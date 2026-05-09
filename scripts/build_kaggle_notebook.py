@@ -124,3 +124,21 @@ def split_by_section_markers(code: str) -> list:
         head = code[: matches[0].start()].strip()
         if head:
             sections.append(("imports", head))
+        "## Load & quantize the base model\n"
+        "Downloads `Qwen/Qwen3-8B` and loads it straight into 4-bit NF4 (double-quantized) via "
+        "`bitsandbytes` -- this is the step that needs a real GPU. Expect this cell to take a few "
+        "minutes (model download + quantization)."
+    ),
+    "configure LoRA": (
+        "## Attach LoRA adapters\n"
+        "`prepare_model_for_kbit_training` is required glue when combining 4-bit loading + "
+        "gradient checkpointing (it enables `requires_grad` on the input embeddings and casts "
+        "norms to fp32) -- skipping it is a well-known QLoRA gotcha. LoRA targets all 7 linear "
+        "projections (attention + MLP), which the QLoRA paper found necessary to match "
+        "full-finetune quality; at r=16 across 36 layers this is only ~0.5% of the 8B params."
+    ),
+    "load & format data": (
+        "## Load & format the Roman-Urdu instruction data\n"
+        "`build_splits` pools `Redgerd/roman-urdu-alpaca-qa-mix`, deduplicates it, and isolates "
+        "the genuinely-Roman-Urdu rows (see the printed diagnostics below -- the raw dataset has "
+        "a real duplication bug, documented in the README, that would otherwise double-count "
