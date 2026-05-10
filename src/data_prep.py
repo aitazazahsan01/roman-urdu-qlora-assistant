@@ -125,3 +125,20 @@ so isolating the Roman-Urdu-only rows needs two independent signals:
   1. File-membership: does this row's (instruction, input, output) match a row
      in the raw roman_urdu_QA_full_alpaca.jsonl source file?
   2. A lightweight Roman-Urdu stopword-hit-rate heuristic, as a cross-check.
+def sanity_check(ds: Dataset) -> None:
+    n_empty = sum(1 for o in ds["output"] if not o.strip())
+    if n_empty:
+        raise ValueError(f"{n_empty} rows have an empty output")
+
+    try:
+        from transformers import AutoTokenizer
+
+        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME)
+        lengths = []
+        for row in ds:
+            messages = [{"role": "user", "content": row["instruction"] + (("\n\n" + row["input"]) if row["input"].strip() else "")}]
+            messages.append({"role": "assistant", "content": row["output"]})
+            ids = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=False)["input_ids"]
+            lengths.append(len(ids))
+        lengths.sort()
+        n = len(lengths)

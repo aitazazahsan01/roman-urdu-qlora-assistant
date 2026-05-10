@@ -16,3 +16,5 @@ results/smoke-test-*
 .ipynb_checkpoints/
 # Python
 __pycache__/
+
+# Kaggle credentials (never commit)
