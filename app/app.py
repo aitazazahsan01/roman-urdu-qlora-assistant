@@ -42,3 +42,14 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from inference import RomanUrduQLoRAAssistant  # noqa: E402
 
+                gr.Examples(examples=EXAMPLES, inputs=[instruction_box, input_box])
+            with gr.Column():
+                output_box = gr.Textbox(label="Response", lines=8)
+
+        submit_btn.click(respond, inputs=[instruction_box, input_box], outputs=[output_box])
+
+    return demo
+
+
+def main():
+    p = argparse.ArgumentParser()

@@ -88,3 +88,11 @@ def main():
         tuned_predictions.append(generate_completion(model, tokenizer, row["instruction"], row["input"]))
 
     base_scores = rouge_l_summary(references, base_predictions)
+        config.num_attention_heads = 2
+        config.num_key_value_heads = 1
+        base = AutoModelForCausalLM.from_config(config)
+        from peft import get_peft_model
+
+        model = get_peft_model(base, build_lora_config())  # untrained (LoRA B is zero-init) -- fine for a smoke test
+        eval_ds = Dataset.from_dict(
+            {
