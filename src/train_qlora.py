@@ -134,3 +134,20 @@ def load_split(data_dir: Path, split: str) -> Dataset:
 
 def main():
     args = parse_args()
+    set_seed(args.seed)
+
+    use_4bit = torch.cuda.is_available() and not args.smoke_test
+
+    if args.smoke_test:
+        args.output_dir = ROOT / "outputs" / "smoke-test-qlora"
+        args.num_train_epochs = 1
+        args.per_device_train_batch_size = 4
+        args.gradient_accumulation_steps = 1
+        print(
+            "Running in --smoke-test mode: tiny random-weight Qwen3-architecture model (real tokenizer), "
+            "real (tiny) data slice, CPU, full precision. This does NOT validate the real 4-bit "
+            "bitsandbytes quantization path -- that requires CUDA (see kaggle/train_kernel.ipynb)."
+        )
+    elif not torch.cuda.is_available():
+        raise RuntimeError(
+            "No CUDA device found. Real QLoRA training needs a GPU -- run this on Kaggle "

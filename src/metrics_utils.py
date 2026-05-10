@@ -38,3 +38,15 @@ def rouge_l_summary(references: list, predictions: list) -> dict:
     elsewhere in this project (the tokenizer/chat-template choices)."""
     scorer = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=False)
     precisions, recalls, fmeasures = [], [], []
+    }
+
+
+def plot_rouge_comparison(base_scores: dict, tuned_scores: dict, output_path: Path) -> None:
+    """Grouped bar chart: base (zero-shot) vs QLoRA-tuned, precision/recall/F.
+    Saves a PNG and also renders inline when run inside a notebook."""
+    labels = ["Precision", "Recall", "F-measure"]
+    keys = ["rougeL_precision_mean", "rougeL_recall_mean", "rougeL_fmeasure_mean"]
+    base_vals = [base_scores[k] for k in keys]
+    tuned_vals = [tuned_scores[k] for k in keys]
+
+    x = range(len(labels))
