@@ -8,3 +8,5 @@ matplotlib
 
 # Evaluation
 rouge-score
+# Demo app
+gradio>=4.0
