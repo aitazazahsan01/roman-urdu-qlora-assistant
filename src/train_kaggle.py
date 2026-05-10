@@ -43,3 +43,18 @@ held_out = eval_ds.select(range(min(len(eval_ds), 40)))  # keep eval generation 
 references = [row["output"] for row in held_out]
 
 base_predictions, tuned_predictions = [], []
+for row in held_out:
+    with model.disable_adapter():
+        base_predictions.append(generate_completion(model, tokenizer, row["instruction"], row["input"]))
+    tuned_predictions.append(generate_completion(model, tokenizer, row["instruction"], row["input"]))
+
+base_scores = rouge_l_summary(references, base_predictions)
+tuned_scores = rouge_l_summary(references, tuned_predictions)
+print(f"Base (zero-shot)  ROUGE-L F: {base_scores['rougeL_fmeasure_mean']:.4f}")
+print(f"QLoRA-tuned        ROUGE-L F: {tuned_scores['rougeL_fmeasure_mean']:.4f}")
+
+RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+all_results = json.loads(RESULTS_PATH.read_text(encoding="utf-8")) if RESULTS_PATH.exists() else {}
+all_results["base_zeroshot"] = base_scores
+all_results["qlora_tuned"] = tuned_scores
+with open(RESULTS_PATH, "w", encoding="utf-8") as f:

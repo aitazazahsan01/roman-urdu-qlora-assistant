@@ -23,3 +23,14 @@ class RomanUrduQLoRAAssistant:
             )
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_name_or_path)
         if self.tokenizer.pad_token is None:
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--adapter-dir", required=True, help="Local path or HF Hub repo id")
+    p.add_argument("--text", required=True, help="The instruction")
+    p.add_argument("--input", default="", help="Optional supplementary input")
+    args = p.parse_args()
+
+    assistant = RomanUrduQLoRAAssistant(args.adapter_dir)
+    print(assistant.generate(args.text, args.input))
+
