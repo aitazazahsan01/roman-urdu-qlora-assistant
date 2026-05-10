@@ -31,3 +31,14 @@ def build_app(adapter_dir: str) -> gr.Blocks:
         return assistant.generate(instruction, input_text)
 
     with gr.Blocks(title="Roman Urdu QLoRA Assistant") as demo:
+import argparse
+import sys
+from pathlib import Path
+
+import gradio as gr
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
+
+from inference import RomanUrduQLoRAAssistant  # noqa: E402
+
