@@ -142,3 +142,20 @@ def sanity_check(ds: Dataset) -> None:
             lengths.append(len(ids))
         lengths.sort()
         n = len(lengths)
+
+Cross-validating the two found only 3 disagreements out of 999 deduped rows,
+all the same failure mode: English-language *questions about* Urdu (e.g. "Give
+some examples of Singular and Plural in Urdu Language") that happen to live in
+the "pure Roman-Urdu" source file. Those 3 are dropped.
+
+Usage:
+    python src/data_prep.py
+"""
+
+import argparse
+import json
+from collections import Counter
+from pathlib import Path
+
+from datasets import Dataset, load_dataset
+from huggingface_hub import hf_hub_download

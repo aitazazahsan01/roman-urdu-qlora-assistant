@@ -58,3 +58,18 @@ all_results = json.loads(RESULTS_PATH.read_text(encoding="utf-8")) if RESULTS_PA
 all_results["base_zeroshot"] = base_scores
 all_results["qlora_tuned"] = tuned_scores
 with open(RESULTS_PATH, "w", encoding="utf-8") as f:
+base_model = AutoModelForCausalLM.from_pretrained(
+    BASE_MODEL_NAME, quantization_config=build_bnb_config(), device_map="auto"
+)
+
+# ---- configure LoRA ----
+model = prepare_for_training(base_model, use_4bit=True)
+model.print_trainable_parameters()
+
+# ---- load & format data ----
+train_ds, eval_ds = build_splits(VAL_FRACTION, SEED)
+print(f"train={len(train_ds)}  validation={len(eval_ds)}")
+
+
+def tokenize(example):
+    return format_and_mask(example["instruction"], example["input"], example["output"], tokenizer, MAX_SEQ_LENGTH)
