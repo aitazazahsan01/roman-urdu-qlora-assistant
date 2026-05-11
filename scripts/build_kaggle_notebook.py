@@ -142,3 +142,21 @@ def split_by_section_markers(code: str) -> list:
         "`build_splits` pools `Redgerd/roman-urdu-alpaca-qa-mix`, deduplicates it, and isolates "
         "the genuinely-Roman-Urdu rows (see the printed diagnostics below -- the raw dataset has "
         "a real duplication bug, documented in the README, that would otherwise double-count "
+    data_prep_code = strip_default_out_dir(strip_local_imports(strip_main_block(strip_module_docstring(read("data_prep.py")))))
+    train_kaggle_code = strip_local_imports(strip_module_docstring(read("train_kaggle.py")))
+
+    cells = [
+        md_cell(
+            "# Roman Urdu QLoRA Assistant — Training (Kaggle GPU)\n\n"
+            "Auto-generated from `src/` by `scripts/build_kaggle_notebook.py` — "
+            "**do not hand-edit this notebook**; change the source files and rerun the "
+            "builder instead.\n\n"
+            "Before running: Settings → Accelerator → GPU T4 x1, and Internet → On. "
+            "Run cells top to bottom and read the markdown between them -- this notebook is "
+            "meant to be watched, not just executed blind."
+        ),
+        code_cell(
+            '!pip install -q -U "transformers>=4.51" "peft>=0.11" "bitsandbytes>=0.43" '
+            '"datasets>=2.19" accelerate rouge-score matplotlib huggingface_hub\n'
+        ),
+        code_cell(qlora_utils_code),

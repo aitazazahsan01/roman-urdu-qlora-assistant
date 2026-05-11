@@ -159,3 +159,20 @@ from pathlib import Path
 
 from datasets import Dataset, load_dataset
 from huggingface_hub import hf_hub_download
+    deduped = _dedupe(raw)
+    print(f"  after dedup by (instruction, input, output): {len(deduped)} rows")
+
+    ru_only = filter_roman_urdu(deduped)
+    print(f"  after Roman-Urdu file-membership + stopword-heuristic filter: {len(ru_only)} rows")
+
+    sanity_check(ru_only)
+
+    shuffled = ru_only.shuffle(seed=seed)
+    n_val = max(1, int(len(shuffled) * val_fraction))
+    val = shuffled.select(range(n_val))
+    train = shuffled.select(range(n_val, len(shuffled)))
+    return train, val
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
