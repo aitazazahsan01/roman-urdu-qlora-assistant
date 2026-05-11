@@ -96,3 +96,11 @@ def main():
         model = get_peft_model(base, build_lora_config())  # untrained (LoRA B is zero-init) -- fine for a smoke test
         eval_ds = Dataset.from_dict(
             {
+"""Evaluate a QLoRA adapter: generate on held-out prompts with the model both
+with and without the adapter (peft's disable_adapter() context, so it's the
+same loaded weights either way), score both arms with ROUGE-L, and save a
+handful of full transcripts for qualitative reading -- a single scalar
+undersells a small instruction-tuning result, so results/sample_completions.json
+matters as much as results/metrics.json here.
+
+Usage:

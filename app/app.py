@@ -53,3 +53,13 @@ from inference import RomanUrduQLoRAAssistant  # noqa: E402
 
 def main():
     p = argparse.ArgumentParser()
+    p.add_argument("--adapter-dir", default=str(ROOT / "outputs" / "qwen3-8b-roman-urdu-qlora"))
+    p.add_argument("--share", action="store_true")
+    args = p.parse_args()
+
+    demo = build_app(args.adapter_dir)
+    demo.launch(share=args.share)
+
+
+if __name__ == "__main__":
+    main()
