@@ -22,3 +22,6 @@ SMOKE_OUTPUT_DIR = ROOT / "outputs" / "smoke-test-qlora"
     run("train_qlora.py", "--smoke-test")
     run("evaluate.py", "--smoke-test")
     print(
+
+Important, honest scope: this validates the data pipeline, chat-template
+formatting, loss masking, and LoRA adapter attachment on CPU with a tiny
