@@ -10,3 +10,5 @@ matplotlib
 rouge-score
 # Demo app
 gradio>=4.0
+
+# Hub + Kaggle GPU automation

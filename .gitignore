@@ -18,3 +18,5 @@ results/smoke-test-*
 __pycache__/
 
 # Kaggle credentials (never commit)
+venv/
+*.egg-info/
