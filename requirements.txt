@@ -12,3 +12,5 @@ rouge-score
 gradio>=4.0
 
 # Hub + Kaggle GPU automation
+transformers>=4.51
+datasets>=2.19
