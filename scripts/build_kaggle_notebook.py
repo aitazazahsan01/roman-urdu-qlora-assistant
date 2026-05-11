@@ -160,3 +160,22 @@ def split_by_section_markers(code: str) -> list:
             '"datasets>=2.19" accelerate rouge-score matplotlib huggingface_hub\n'
         ),
         code_cell(qlora_utils_code),
+    main()
+    )
+
+    notebook = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "language_info": {"name": "python", "version": "3.10"},
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(notebook, indent=1), encoding="utf-8")
+    print(f"Wrote {OUT}")
+
+
+if __name__ == "__main__":
