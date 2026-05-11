@@ -50,3 +50,27 @@ def plot_rouge_comparison(base_scores: dict, tuned_scores: dict, output_path: Pa
     tuned_vals = [tuned_scores[k] for k in keys]
 
     x = range(len(labels))
+    for ref, pred in zip(references, predictions):
+        score = scorer.score(ref, pred)["rougeL"]
+        precisions.append(score.precision)
+        recalls.append(score.recall)
+        fmeasures.append(score.fmeasure)
+
+    n = len(fmeasures)
+    return {
+        "n": n,
+        "rougeL_precision_mean": sum(precisions) / n if n else 0.0,
+        "rougeL_recall_mean": sum(recalls) / n if n else 0.0,
+        "rougeL_fmeasure_mean": sum(fmeasures) / n if n else 0.0,
+"""ROUGE-L scoring, shared by evaluate.py and the Kaggle notebook's inline
+base-vs-tuned comparison, so both arms are scored identically.
+"""
+
+from pathlib import Path
+
+from rouge_score import rouge_scorer
+
+
+def _is_notebook() -> bool:
+    try:
+        from IPython import get_ipython
