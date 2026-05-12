@@ -112,3 +112,19 @@ def prepare_for_training(model, use_4bit: bool):
     from peft import get_peft_model, prepare_model_for_kbit_training
 
     if use_4bit:
+            do_sample=False,
+            repetition_penalty=repetition_penalty,
+            no_repeat_ngram_size=no_repeat_ngram_size,
+            pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id,
+        )
+
+    completion_ids = output_ids[0][prompt_ids.shape[1] :]
+    return tokenizer.decode(completion_ids, skip_special_tokens=True).strip()
+
+
+def plot_training_loss(log_history: list, output_path: Path) -> None:
+    """Plots train/eval loss vs. step from Trainer.state.log_history. Saves a
+    PNG and also renders inline (plt.show()) when run inside a notebook."""
+    train_steps = [e["step"] for e in log_history if "loss" in e and "eval_loss" not in e]
+    train_losses = [e["loss"] for e in log_history if "loss" in e and "eval_loss" not in e]
+    eval_steps = [e["step"] for e in log_history if "eval_loss" in e]
