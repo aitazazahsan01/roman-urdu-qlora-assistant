@@ -227,3 +227,27 @@ Validates everything except the real 4-bit quantization path — see the
 **3. Fine-tune on Kaggle's free T4 GPU:**
 
 ```bash
+<table>
+<tr>
+<td width="50%"><img src="results/rouge_comparison.png" alt="Base vs QLoRA-tuned ROUGE-L"></td>
+<td width="50%"><img src="results/training_loss.png" alt="Training loss curve"></td>
+</tr>
+</table>
+
+QLoRA-tuned wins on all three, and by a wide margin on recall/F-measure
+(+73% relative F-measure). Loss dropped steadily and smoothly over the full
+run (3.17 → ~1.95 train loss across 84 steps, eval loss tracking it down
+too) — no sign of the eval loss curve turning back up, so this isn't a
+textbook overfitting-on-the-loss-curve story.
+
+> **But the qualitative transcripts tell a more honest, more interesting
+> story than the scalar table above.** Reading all 8 saved examples:
+
+- **The adapter reliably does the one thing it was supposed to do**: base
+  zero-shot frequently answers Roman-Urdu prompts *in English*, or produces
+  garbled Urdu-script output, or just misunderstands the question (one
+  example: asked to explain Adam Smith's "invisible hand" in Urdu, base
+  free-associates about "the Battle of the Bulge... during World War I").
+  QLoRA-tuned answers in Roman Urdu, on-topic, every single time. That's a
+  real, working style adaptation — the actual thing this project set out to do.
+- **But several QLoRA-tuned completions degrade into repetition loops** —
