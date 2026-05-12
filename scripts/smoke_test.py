@@ -28,3 +28,9 @@ formatting, loss masking, and LoRA adapter attachment on CPU with a tiny
 random-weight model in full precision. It does NOT and cannot validate the
 real 4-bit bitsandbytes quantization path -- that requires CUDA and can only
 be exercised on the Kaggle GPU kernel itself (kaggle/train_kernel.ipynb).
+
+if __name__ == "__main__":
+    main()
+"""
+
+import subprocess
