@@ -104,3 +104,11 @@ undersells a small instruction-tuning result, so results/sample_completions.json
 matters as much as results/metrics.json here.
 
 Usage:
+    n_samples = min(args.n_samples, len(held_out))
+    samples = [
+        {
+            "instruction": held_out[i]["instruction"],
+            "input": held_out[i]["input"],
+            "reference": held_out[i]["output"],
+            "base_zeroshot": base_predictions[i],
+            "qlora_tuned": tuned_predictions[i],
