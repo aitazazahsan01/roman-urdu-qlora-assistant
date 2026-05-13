@@ -63,3 +63,14 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""Gradio demo: type an instruction (optionally with extra context) and get a
+Roman Urdu response from the QLoRA-tuned assistant.
+
+Needs a CUDA GPU (bitsandbytes' 4-bit path is GPU-only) -- this will NOT run
+on the local CPU-only dev machine. Run it on a GPU-tier Space, a Kaggle
+notebook with a Gradio cell, or any other CUDA machine.
+
+Usage:
+    python app/app.py --adapter-dir outputs/qwen3-8b-roman-urdu-qlora
+"""
+
