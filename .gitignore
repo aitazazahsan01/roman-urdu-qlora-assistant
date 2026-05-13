@@ -24,3 +24,5 @@ venv/
 # Env
 kaggle.json
 
+*.ckpt
+
