@@ -22,3 +22,5 @@ venv/
 *.egg-info/
 
 # Env
+kaggle.json
+
