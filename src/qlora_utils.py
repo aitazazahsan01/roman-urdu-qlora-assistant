@@ -128,3 +128,19 @@ def plot_training_loss(log_history: list, output_path: Path) -> None:
     train_steps = [e["step"] for e in log_history if "loss" in e and "eval_loss" not in e]
     train_losses = [e["loss"] for e in log_history if "loss" in e and "eval_loss" not in e]
     eval_steps = [e["step"] for e in log_history if "eval_loss" in e]
+
+    return LoraConfig(
+        r=LORA_R,
+        lora_alpha=LORA_ALPHA,
+        lora_dropout=LORA_DROPOUT,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=LORA_TARGET_MODULES,
+    )
+
+
+def build_messages(instruction: str, input_text: str) -> list:
+    user = instruction if not input_text.strip() else f"{instruction}\n\n{input_text}"
+    return [{"role": "user", "content": user}]
+
+
