@@ -275,3 +275,27 @@ textbook overfitting-on-the-loss-curve story.
 - **The local CPU smoke test's honest scope**: `bitsandbytes`'s 4-bit path is
   CUDA-only, and there's no GPU on the dev machine this was built on.
   `scripts/smoke_test.py` validates the data pipeline, chat-template
+  e.g. one asked for a klasiki ghazal produces "Kabhi na kahin kisi ne kaha"
+  (roughly "never, no one ever said") repeated verbatim ~15 times; another
+  ("Khushk mewa ke faide batain") just repeats the instruction itself back
+  ~15 times. This is a classic small-dataset + greedy-decoding failure mode,
+  not a data or masking bug: `do_sample=False` has no mechanism to break out
+  of a loop once the model locks onto one, and 485 training rows over 3
+  epochs is enough to shift the model's *language/register* reliably but
+  not enough to give it robust long-generation behavior at `max_new_tokens=256`.
+
+**Read on ROUGE-L**: the score improvement is real but partly an artifact of
+the same effect — getting the *language* right (Roman Urdu vs. English)
+recovers a lot of n-gram overlap with the reference regardless of the
+repetition problem, so the table above is honest but shouldn't be read as
+"the assistant reliably produces good long-form answers." It reliably
+produces *Roman-Urdu-register* answers; longer generations are where it
+breaks down.
+
+**Fixed in code after this run, not yet re-validated**: `generate_completion`
+now defaults to `repetition_penalty=1.2` and `no_repeat_ngram_size=3` —
+greedy decoding otherwise has no mechanism to break out of a loop once the
+model locks onto one. The numbers and transcripts above are from *before*
+this change (the run that motivated it); they were left as-is rather than
+silently reworded, since that's the actual evidence the fix is based on. The
+adapter itself (`results/`'s numbers, the trained weights) doesn't need
