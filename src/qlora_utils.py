@@ -144,3 +144,19 @@ def build_messages(instruction: str, input_text: str) -> list:
     return [{"role": "user", "content": user}]
 
 
+
+# Target all 7 linear projections (attention + MLP), not just attention -- the
+# QLoRA paper found this is needed to match full-finetune quality, and at
+# r=16 across 36 layers it's only ~44M trainable params (~0.5% of 8B), trivial
+# next to the ~4.5GB the 4-bit base itself occupies. Qwen3's q_norm/k_norm
+# (QK-norm) are RMSNorm, not Linear, so peft's target-module matching
+# correctly skips them automatically -- they're not missing by accident.
+LORA_TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+LORA_R = 16
+LORA_ALPHA = 32  # 2x rank, standard heuristic
+LORA_DROPOUT = 0.05
+
+MAX_SEQ_LENGTH = 512  # real data measured p99=369 tokens; comfortable headroom
+
+
+def build_bnb_config() -> BitsAndBytesConfig:
