@@ -34,3 +34,14 @@ def main():
     assistant = RomanUrduQLoRAAssistant(args.adapter_dir)
     print(assistant.generate(args.text, args.input))
 
+"""Single-prompt inference wrapper: load the 4-bit base model plus the LoRA
+adapter (loaded dynamically via PeftModel, not merged -- merging a LoRA delta
+into a 4-bit-quantized base isn't a clean operation, it needs dequantizing to
+fp16 first, producing a second ~16GB artifact to manage. Dynamic loading keeps
+the shareable artifact tiny (the adapter alone, tens of MB) and uses the exact
+same quantization path at inference as at training). Used by app/app.py and
+for quick manual checks.
+
+Needs a CUDA GPU (bitsandbytes' 4-bit path is GPU-only) -- this will not run
+on a CPU-only machine.
+
