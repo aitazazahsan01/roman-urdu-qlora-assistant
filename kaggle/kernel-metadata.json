@@ -7,3 +7,4 @@
   "title": "Roman Urdu QLoRA Assistant Training",
   "competition_sources": [],
   "dataset_sources": [],
+  "enable_gpu": true,
