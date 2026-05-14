@@ -251,3 +251,27 @@ textbook overfitting-on-the-loss-curve story.
   QLoRA-tuned answers in Roman Urdu, on-topic, every single time. That's a
   real, working style adaptation — the actual thing this project set out to do.
 - **But several QLoRA-tuned completions degrade into repetition loops** —
+  together on a 16GB T4 anyway. Scored with ROUGE-L
+  (`rouge_score`, `use_stemmer=False` — the default English Porter stemmer
+  would mangle Roman-Urdu tokens). A single scalar undersells a ~485-example
+  result, so `evaluate.py` also saves full instruction/reference/base/tuned
+  transcripts for qualitative reading, not just `results/metrics.json`.
+- **Charts**: the notebook plots and saves a training loss curve
+  (`results/training_loss.png`) and a base-vs-tuned ROUGE-L bar chart
+  (`results/rouge_comparison.png`), rendered inline as you watch it run.
+  The plotting code detects whether it's actually running inside a notebook
+  kernel and only calls `plt.show()` there, forcing the non-interactive Agg
+  backend otherwise — a plain script run (`train_qlora.py`/`evaluate.py`) on
+  a headless machine can otherwise auto-select an interactive matplotlib
+  backend that opens a real window and blocks forever waiting for someone to
+  close it (hit this directly while building — a script hung, not just ran
+  slow, until this was fixed).
+- **Inference**: the LoRA adapter is loaded dynamically on top of the 4-bit
+  base (`peft.PeftModel.from_pretrained`), not merged. Merging a LoRA delta
+  into a 4-bit-quantized base isn't a clean operation — it needs dequantizing
+  to fp16 first, producing a second ~16GB artifact. Dynamic loading keeps the
+  shareable artifact tiny (the adapter alone, tens of MB) and uses the exact
+  same quantization path at inference as at training.
+- **The local CPU smoke test's honest scope**: `bitsandbytes`'s 4-bit path is
+  CUDA-only, and there's no GPU on the dev machine this was built on.
+  `scripts/smoke_test.py` validates the data pipeline, chat-template
