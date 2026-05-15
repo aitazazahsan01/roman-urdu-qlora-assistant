@@ -37,3 +37,6 @@ import subprocess
         "\nSmoke test passed -- data pipeline, chat-template formatting, loss masking, and "
         "LoRA attachment are all wired up correctly. This did NOT exercise the real 4-bit "
         "quantized path (needs CUDA) -- that only happens when you run kaggle/train_kernel.ipynb "
+    if not (ROOT / "data" / "processed" / "roman_urdu_qa" / "train" / "dataset_info.json").exists():
+        run("data_prep.py")
+
