@@ -118,3 +118,18 @@ for row, base_pred, tuned_pred in zip(
 ):
     samples.append(
         {
+"""End-to-end GPU driver: data prep + 4-bit QLoRA fine-tuning + base-vs-tuned
+evaluation, in a single run. Meant for a Kaggle kernel (free T4 GPU) -- see
+kaggle/kernel-metadata.json and scripts/build_kaggle_notebook.py, which
+inlines this file (plus qlora_utils.py, data_prep.py, and metrics_utils.py)
+into a self-contained, cell-by-cell notebook meant to be run and watched, not
+just executed blind.
+
+Written as flat top-level script code (no main() wrapper) so it can be dropped
+in as notebook cells as-is. The `# ---- section ----` comments below are not
+just visual dividers -- scripts/build_kaggle_notebook.py splits on them to
+produce one notebook cell per stage. Also runs standalone:
+`python src/train_kaggle.py` on any machine with a CUDA GPU and
+requirements.txt installed.
+"""
+
