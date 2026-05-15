@@ -179,3 +179,21 @@ def split_by_section_markers(code: str) -> list:
 
 
 if __name__ == "__main__":
+"""Generate kaggle/train_kernel.ipynb by inlining src/qlora_utils.py,
+src/metrics_utils.py, src/data_prep.py, and src/train_kaggle.py into a single
+self-contained notebook.
+
+Unlike the terser notebooks in the sibling projects (which the agent drove
+end-to-end via the Kaggle API), THIS notebook is meant to be run and watched
+by a human, cell by cell -- so train_kaggle.py's `# ---- section ----` comments
+aren't just visual dividers, they're split points: each becomes its own
+notebook cell with an explanatory markdown cell in front of it. Still zero
+hand-duplicated pipeline code -- only the markdown prose and the pip-install
+line are notebook-only, everything else is inlined straight from src/.
+
+`kaggle kernels push` only pushes one code file, so rather than hand-maintaining
+a separate copy of the training pipeline for Kaggle (and letting it drift from
+the real src/ logic), this script assembles the notebook from the real source
+files. Re-run it after changing any of the four files above.
+
+Usage:
