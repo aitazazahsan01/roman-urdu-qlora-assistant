@@ -9,3 +9,4 @@
   },
     "n": 40,
     "rougeL_recall_mean": 0.17389504437377445,
+    "rougeL_fmeasure_mean": 0.16448578464336713
