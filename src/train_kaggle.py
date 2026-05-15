@@ -103,3 +103,18 @@ from qlora_utils import (
     gradient_checkpointing=True,
     logging_steps=10,
     report_to="none",
+    json.dump(all_results, f, indent=2)
+print(f"Saved metrics to {RESULTS_PATH}")
+
+# ---- plot rouge comparison ----
+plot_rouge_comparison(base_scores, tuned_scores, OUTPUT_ROOT / "results" / "rouge_comparison.png")
+
+# ---- sample completions ----
+samples = []
+for row, base_pred, tuned_pred in zip(
+    held_out.select(range(min(N_SAMPLE_COMPLETIONS, len(held_out)))),
+    base_predictions[:N_SAMPLE_COMPLETIONS],
+    tuned_predictions[:N_SAMPLE_COMPLETIONS],
+):
+    samples.append(
+        {
