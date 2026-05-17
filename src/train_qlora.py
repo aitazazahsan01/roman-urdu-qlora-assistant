@@ -1,37 +1,3 @@
-        per_device_eval_batch_size=args.per_device_train_batch_size,
-        gradient_accumulation_steps=args.gradient_accumulation_steps,
-        num_train_epochs=args.num_train_epochs,
-        warmup_steps=warmup_steps,
-        lr_scheduler_type="cosine",
-        fp16=use_4bit,  # only meaningful (and safe) when actually running on CUDA
-        optim="paged_adamw_8bit" if use_4bit else "adamw_torch",
-        gradient_checkpointing=use_4bit,
-        logging_steps=10,
-        report_to="none",
-        seed=args.seed,
-    )
-
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_features,
-    prepare_for_training,
-)
-
-ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_DATA_DIR = ROOT / "data" / "processed" / "roman_urdu_qa"
-
-
-def parse_args():
-    p = argparse.ArgumentParser()
-    p.add_argument("--model-name-or-path", default=BASE_MODEL_NAME)
-    p.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
-    p.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "qwen3-8b-roman-urdu-qlora")
-    p.add_argument("--max-seq-length", type=int, default=MAX_SEQ_LENGTH)
-    p.add_argument("--num-train-epochs", type=float, default=3.0)
-    p.add_argument("--per-device-train-batch-size", type=int, default=4)
-    p.add_argument("--gradient-accumulation-steps", type=int, default=4)
-    p.add_argument("--learning-rate", type=float, default=2e-4)
 """Fine-tune Qwen3-8B into a Roman Urdu instruction-following assistant via
 4-bit QLoRA.
 
@@ -49,23 +15,6 @@ that can only be exercised on a real CUDA machine.
 Usage:
     python src/train_qlora.py --smoke-test
     python src/train_qlora.py --output-dir outputs/qwen3-8b-roman-urdu-qlora   # needs CUDA
-            "(kaggle/train_kernel.ipynb) or another CUDA machine, or pass --smoke-test to validate "
-            "the pipeline on CPU instead."
-        )
-
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
-
-    if args.smoke_test:
-        config = AutoConfig.from_pretrained(args.model_name_or_path)
-        config.num_hidden_layers = 2
-        config.hidden_size = 32
-        config.intermediate_size = 64
-        config.num_attention_heads = 2
-        config.num_key_value_heads = 1
-        model = AutoModelForCausalLM.from_config(config)
-    else:
 """
 
 import argparse
@@ -83,40 +32,23 @@ from qlora_utils import (
     build_bnb_config,
     format_and_mask,
     plot_training_loss,
-        model = AutoModelForCausalLM.from_pretrained(
-            args.model_name_or_path, quantization_config=build_bnb_config(), device_map="auto"
-        )
+    prepare_for_training,
+)
 
-    model = prepare_for_training(model, use_4bit=use_4bit)
-    model.print_trainable_parameters()
+ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_DATA_DIR = ROOT / "data" / "processed" / "roman_urdu_qa"
 
-    train_ds = load_split(args.data_dir, "train")
-    eval_ds = load_split(args.data_dir, "validation")
-    if args.smoke_test:
-        train_ds = train_ds.select(range(min(16, len(train_ds))))
-        eval_ds = eval_ds.select(range(min(8, len(eval_ds))))
 
-    def tokenize(example):
-        return format_and_mask(example["instruction"], example["input"], example["output"], tokenizer, args.max_seq_length)
-
-    train_features = train_ds.map(tokenize, remove_columns=train_ds.column_names)
-        eval_dataset=eval_features,
-        processing_class=tokenizer,
-        data_collator=SFTDataCollator(tokenizer),
-    )
-    trainer.train()
-
-    loss_plot_name = "smoke-test-training_loss.png" if args.smoke_test else "training_loss.png"
-    plot_training_loss(trainer.state.log_history, ROOT / "results" / loss_plot_name)
-
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(str(args.output_dir))  # adapter only (peft model)
-    tokenizer.save_pretrained(str(args.output_dir))
-
-    run_config = {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()}
-    with open(args.output_dir / "run_config.json", "w", encoding="utf-8") as f:
-        json.dump(run_config, f, indent=2)
-
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--model-name-or-path", default=BASE_MODEL_NAME)
+    p.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
+    p.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "qwen3-8b-roman-urdu-qlora")
+    p.add_argument("--max-seq-length", type=int, default=MAX_SEQ_LENGTH)
+    p.add_argument("--num-train-epochs", type=float, default=3.0)
+    p.add_argument("--per-device-train-batch-size", type=int, default=4)
+    p.add_argument("--gradient-accumulation-steps", type=int, default=4)
+    p.add_argument("--learning-rate", type=float, default=2e-4)
     p.add_argument("--warmup-ratio", type=float, default=0.05)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument(
@@ -151,3 +83,93 @@ def main():
     elif not torch.cuda.is_available():
         raise RuntimeError(
             "No CUDA device found. Real QLoRA training needs a GPU -- run this on Kaggle "
+            "(kaggle/train_kernel.ipynb) or another CUDA machine, or pass --smoke-test to validate "
+            "the pipeline on CPU instead."
+        )
+
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    if args.smoke_test:
+        config = AutoConfig.from_pretrained(args.model_name_or_path)
+        config.num_hidden_layers = 2
+        config.hidden_size = 32
+        config.intermediate_size = 64
+        config.num_attention_heads = 2
+        config.num_key_value_heads = 1
+        model = AutoModelForCausalLM.from_config(config)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_name_or_path, quantization_config=build_bnb_config(), device_map="auto"
+        )
+
+    model = prepare_for_training(model, use_4bit=use_4bit)
+    model.print_trainable_parameters()
+
+    train_ds = load_split(args.data_dir, "train")
+    eval_ds = load_split(args.data_dir, "validation")
+    if args.smoke_test:
+        train_ds = train_ds.select(range(min(16, len(train_ds))))
+        eval_ds = eval_ds.select(range(min(8, len(eval_ds))))
+
+    def tokenize(example):
+        return format_and_mask(example["instruction"], example["input"], example["output"], tokenizer, args.max_seq_length)
+
+    train_features = train_ds.map(tokenize, remove_columns=train_ds.column_names)
+    eval_features = eval_ds.map(tokenize, remove_columns=eval_ds.column_names)
+    print(f"{len(train_ds)} train / {len(eval_ds)} val examples, tokenized")
+
+    steps_per_epoch = -(-len(train_features) // (args.per_device_train_batch_size * args.gradient_accumulation_steps))
+    total_steps = int(steps_per_epoch * args.num_train_epochs)
+    warmup_steps = int(total_steps * args.warmup_ratio)
+
+    training_args = TrainingArguments(
+        output_dir=str(args.output_dir),
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        save_total_limit=2,
+        load_best_model_at_end=True,
+        metric_for_best_model="eval_loss",
+        greater_is_better=False,
+        learning_rate=args.learning_rate,
+        per_device_train_batch_size=args.per_device_train_batch_size,
+        per_device_eval_batch_size=args.per_device_train_batch_size,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
+        num_train_epochs=args.num_train_epochs,
+        warmup_steps=warmup_steps,
+        lr_scheduler_type="cosine",
+        fp16=use_4bit,  # only meaningful (and safe) when actually running on CUDA
+        optim="paged_adamw_8bit" if use_4bit else "adamw_torch",
+        gradient_checkpointing=use_4bit,
+        logging_steps=10,
+        report_to="none",
+        seed=args.seed,
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_features,
+        eval_dataset=eval_features,
+        processing_class=tokenizer,
+        data_collator=SFTDataCollator(tokenizer),
+    )
+    trainer.train()
+
+    loss_plot_name = "smoke-test-training_loss.png" if args.smoke_test else "training_loss.png"
+    plot_training_loss(trainer.state.log_history, ROOT / "results" / loss_plot_name)
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(str(args.output_dir))  # adapter only (peft model)
+    tokenizer.save_pretrained(str(args.output_dir))
+
+    run_config = {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()}
+    with open(args.output_dir / "run_config.json", "w", encoding="utf-8") as f:
+        json.dump(run_config, f, indent=2)
+
+    print(f"Saved LoRA adapter to {args.output_dir}")
+
+
+if __name__ == "__main__":
+    main()
