@@ -1,10 +1,15 @@
-  "enable_internet": true,
-  "kernel_sources": [],
-  "model_sources": []
 {
-  "code_file": "train_kernel.ipynb",
   "id": "aitazazahsan01/roman-urdu-qlora-assistant-training",
   "title": "Roman Urdu QLoRA Assistant Training",
-  "competition_sources": [],
-  "dataset_sources": [],
+  "code_file": "train_kernel.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
   "enable_gpu": true,
+  "enable_internet": true,
+  "enable_tpu": false,
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}
