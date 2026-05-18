@@ -1,12 +1,14 @@
-    "rougeL_precision_mean": 0.21127801724351442,
+{
+  "base_zeroshot": {
+    "n": 40,
     "rougeL_precision_mean": 0.19389286707427578,
     "rougeL_recall_mean": 0.1282176246991875,
-{
-  "qlora_tuned": {
-}    "n": 40,
     "rougeL_fmeasure_mean": 0.09501426214869738
-  }
   },
+  "qlora_tuned": {
     "n": 40,
+    "rougeL_precision_mean": 0.21127801724351442,
     "rougeL_recall_mean": 0.17389504437377445,
     "rougeL_fmeasure_mean": 0.16448578464336713
+  }
+}
