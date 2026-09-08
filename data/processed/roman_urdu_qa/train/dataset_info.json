@@ -1,0 +1,54 @@
+{
+  "builder_name": "json",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "roman-urdu-alpaca-qa-mix",
+  "dataset_size": 1812710,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/Redgerd/roman-urdu-alpaca-qa-mix@659d07e82f7b57c7af6ac46334d43c399d337c84/combined_roman_urdu_english.jsonl": {
+      "num_bytes": 1045456,
+      "checksum": null
+    },
+    "hf://datasets/Redgerd/roman-urdu-alpaca-qa-mix@659d07e82f7b57c7af6ac46334d43c399d337c84/roman_urdu_QA_full_alpaca.jsonl": {
+      "num_bytes": 845197,
+      "checksum": null
+    }
+  },
+  "download_size": 1890653,
+  "features": {
+    "instruction": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "input": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "output": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 3703363,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 1812710,
+      "num_examples": 1489,
+      "dataset_name": "roman-urdu-alpaca-qa-mix"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
